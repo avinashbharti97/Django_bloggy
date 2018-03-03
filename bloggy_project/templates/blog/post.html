@@ -13,5 +13,14 @@
 		{%	endif	%}
 		</p>
 		</ul>
+
+<p>most popular post:</p>
+
+<ul>
+	{% for popular__post in popular_posts %}
+	<li><a href="/blog/{{ popular__post.url }}">{{ popular__post.title }}</a></li>
+	{% endfor %}
+</ul>
+
 <p>Had	enough?	Return	<a	href="/blog">home</a>.</p><br/>
 {%	endblock	%}
