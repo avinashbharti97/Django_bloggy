@@ -7,10 +7,16 @@ from blog.models import Post
 # Create your views here.
 def index(request):
 	latest_posts= Post.objects.all().order_by('-created_at')
+	popular_posts= Post.objects.order_by('-views')[:5]
 	t = loader.get_template('blog/index.html')
-	context_dict = {'latest_posts': latest_posts,}
+	context_dict = {
+		'latest_posts': latest_posts,
+		'popular_posts': popular_posts,
+	}
 	for post in latest_posts:
 		post.url = post.title.replace(' ','_' )
+	for popular_post in popular_posts:
+		popular_post.url = popular_post.title.replace(' ', '_')
 	c = Context(context_dict)
 	return HttpResponse(t.render(c))
 
