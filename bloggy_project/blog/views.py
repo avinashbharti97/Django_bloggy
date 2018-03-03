@@ -1,9 +1,10 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from django.template import Context, loader
+from django.template import Context, loader, RequestContext
 from django.shortcuts import get_object_or_404
 
 from blog.models import Post
+from blog.forms import PostForm
 # Create your views here.
 def encode_url(url):
 	return url.replace(' ', '_')
@@ -23,8 +24,8 @@ def index(request):
 	c = Context(context_dict)
 	return HttpResponse(t.render(c))
 
-def post(request, post_url):
-	single_post = get_object_or_404(Post, title=post_url.replace('_', ' '))
+def post(request, slug):
+	single_post = get_object_or_404(Post, title=slug.replace('_', ' '))
 	single_post.views +=1
 	single_post.save()
 	popular_posts= Post.objects.order_by('-views')[:5]
@@ -34,3 +35,15 @@ def post(request, post_url):
 		'popular_posts':popular_posts,
 		})
 	return HttpResponse(t.render(c))
+
+def add_post(request):
+	if request.method == 'POST':
+		form = PostForm(request.POST, request.FILES)
+		if form.is_valid():
+			form.save(commit = True)
+			return redirect(index)
+		else:
+			print("form.errors")
+	else:
+		form = PostForm()
+	return render(request, 'blog/add_post.html', {'form': form})
